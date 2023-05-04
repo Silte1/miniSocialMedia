@@ -1,0 +1,9 @@
+.loginFormContainer{
+    min-width: 35vw;
+    padding: 1rem;
+    box-shadow:5px 5px 10px black;
+    filter:drop-shadow(5px 5px 10px black);
+    background: rgba(255, 255, 255, 0);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
