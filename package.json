@@ -1,0 +1,20 @@
+{
+  "name": "minisocialmedia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Silte1/miniSocialMedia.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Silte1/miniSocialMedia/issues"
+  },
+  "homepage": "https://github.com/Silte1/miniSocialMedia#readme"
+}

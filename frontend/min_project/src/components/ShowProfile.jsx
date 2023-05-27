@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie'
-
+// React bootstrap
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Container from 'react-bootstrap/Container';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function ShowProfile () {
 
@@ -13,17 +17,19 @@ export default function ShowProfile () {
     const [newAvatar, setNewAvatar] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [oldPassword, setOldPassword] = useState("");
-    const [showForm, setShowForm] = useState(true);
-    const [showName, setShowName] = useState(true);
-    const [showUsername, setShowUsername] = useState(true);
-    const [showPassword, setShowPassword] = useState(true);
-    const [showProfilePic, setShowProfilePic] = useState(true);
+    const [showForm, setShowForm] = useState(false);
+    const [showName, setShowName] = useState(false);
+    const [showUsername, setShowUsername] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showProfilePic, setShowProfilePic] = useState(false);
+    // const [saveText, setSaveText] = useState(true);
+
 
 
     const showFormForUpdate = (par) => {
-        if (sho) {
-            par(true)
-        }
+
+        if (showForm === false) { setShowForm(true) }
+        par(prevPar => !prevPar)
     }
 
     const navigation = useNavigate()
@@ -35,6 +41,11 @@ export default function ShowProfile () {
         setNewAvatar("")
         setOldPassword("")
         setNewPassword("")
+        setShowForm(false)
+        setShowName(false)
+        setShowUsername(false)
+        setShowPassword(false)
+        setShowProfilePic(false)
     }
 
 
@@ -59,19 +70,22 @@ export default function ShowProfile () {
                 } if (newAvatar !== "") {
                     formData.append("oldPassword", oldPassword);
                 }
-
-                const response = await fetch(`http://localhost:3001/me/update`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        //   "Authorization": `Bearer ${token}`
-                    },
-                    // credentials: 'include',
-                    body: formData
-                });
-                if (response.status === 200) {
-                    navigation("/secrets/showPost")
+                // for (const value of formData.values()) {
+                //     console.log(value);
+                // }
+                for (const pair of formData.entries()) {
+                    console.log(`${pair[0]}, ${pair[1]}`);
                 }
+                const response = await fetch(`http://localhost:3001/me/changes/:id`, {
+                    method: "POST",
+                    body: formData,
+                    credentials: 'include'
+
+                });
+                console.log("response:", response)
+                // if (response.status === 200) {
+                //     navigation("/secrets/showPost")
+                // }
 
             } catch (error) {
                 console.log(error);
@@ -137,46 +151,50 @@ export default function ShowProfile () {
     }
 
     return (
-        <div className='container d-flex align-items-center w-100 justify-content-center ' style={{ height: "90vh" }}>
-            <form action='#' method='get' className=" d-flex flex-column  align-items-center justify-content-between border border-light w-25 bg-light h-75" >
-                <div className='mb-1 d-flex flex-column justify-content-center w-100'>
-                    <img src={profileData.profilePicture} className="rounded d-block w-100" alt="..." />
-                    <button type="button" className="btn btn-info">Change profile picture</button>
+        <Container className='container d-flex  w-100 justify-content-evenly gap-1' style={{ height: "90vh" }}>
+            <Form action='#' method='' className=" d-flex flex-column  align-items-center justify-content-between w-40 bg-light p-1 rounded" style={{ height: "80vh", width: "30rem" }}>
+                <div className='mb-1 d-flex flex-column justify-content-center w-100 align-items-center'>
+                    <img src={profileData.profilePicture} className="rounded d-block w-50 rounded-circle" alt="..." />
+                    <button type="button" className="btn btn-info w-100" onClick={() => { showFormForUpdate(setShowProfilePic) }}>Change profile picture</button>
                 </div>
                 <div className='mb-1 d-flex flex-column justify-content-center align-items-center w-100 text-black '>
                     <p  >Your name: {profileData.name} </p>
-                    <button type="button" className="btn btn-info w-100">Change name</button>
+                    <button type="button" className="btn btn-info w-100" onClick={() => { showFormForUpdate(setShowName) }}>Change name</button>
                 </div>
                 <div className='mb-1 d-flex flex-column justify-content-center align-items-center w-100 text-black '>
                     <p>Your username: {profileData.username}</p>
-                    <button type="button" className="btn btn-info w-100">Change username</button>
+                    <button type="button" className="btn btn-info w-100" onClick={() => { showFormForUpdate(setShowUsername) }}>Change username</button>
                 </div>
                 <div className='mb-1 d-flex flex-column justify-content-center align-items-center w-100 text-black '>
-                    <button type="button" className="btn btn-info w-100">Change password</button>
+                    <button type="button" className="btn btn-info w-100" onClick={() => { showFormForUpdate(setShowPassword) }}>Change password</button>
 
                 </div>
-            </form>
-            {showForm && <form action='#' method='post' onSubmit={(e) => handleChanges(e)} className=" d-flex flex-column  align-items-center justify-content-between border border-light w-25 bg-light h-75">
+            </Form>
 
-                {showProfilePic && <input type="file" name="" id="" placeholder='choose a new profile picture'
-                    onChange={(e) => { if (e.target.files.length > 0) setNewAvatar(e.target.files[0]) }} />}
+            {showForm && <Form action="/me/changes" method='post' onSubmit={(e) => handleChanges(e)}
+                className=" d-flex flex-column  align-items-center justify-content-between w-40 bg-light p-1 rounded"
+                style={{ height: "80vh", width: "30rem" }}>
 
-                {showName && <input type="text" name="" id="" placeholder='change your name here'
-                    onChange={(e) => setNewName(e.target.value)} value={newName} />}
+                {showProfilePic && <input className='w-100 text-light form-control' type="file" name="" id="" placeholder='choose a new profile picture'
+                    onChange={(e) => { if (e.target.files.length > 0) setNewAvatar(e.target.files[0]) }} style={{ height: "fitContent" }} />}
 
-                {showUsername && <input type="text" name="" id="" placeholder='change your username here'
+                {showName && <input className='w-100 form-control' type="text" name="" id="" placeholder='new name'
+                    onChange={(e) => setNewName(e.target.value)} value={newName} style={{ height: "fitContent" }} />}
+
+                {showUsername && <input className='w-100 form-control' type="text" name="" id="" placeholder='new username'
                     onChange={(e) => setNewUsername(e.target.value)} value={newUsername} />}
 
-                {showPassword && <div>
-                    <input type="text" name="" id="" placeholder='Enter your old password'
+                {showPassword && <div className='w-100'>
+                    <input className='w-100 form-control' type="password" name="" id="" placeholder='Enter your old password'
                         onChange={(e) => setOldPassword(e.target.value)} value={oldPassword} />
-                    <input type="text" name="" id="" placeholder='Enter your new password'
+                    <input className='w-100 form-control' type="password" name="" id="" placeholder='Enter your new password'
                         onChange={(e) => setNewPassword(e.target.value)} value={newPassword} />
                 </div>}
 
 
-                <button type="button" className="btn btn-info ">Save changes</button>
-            </form>}
-        </div>
+                <button type="submit" className="btn btn-info w-100">Save changes</button>
+            </Form>}
+
+        </Container>
     );
 }
